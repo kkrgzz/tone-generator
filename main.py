@@ -1,18 +1,37 @@
+from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import *
 from design import Ui_MainWindow
+from Signal import SignalGenerator
+
+
+class PlaybackThread(QThread):
+    def __init__(self, signal_generator, parent=None):
+        super().__init__(parent)
+        self.signal_generator = signal_generator
+
+    def run(self):
+        self.signal_generator.play_sound_threaded()
 
 class main(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
         self.qtMainWindow = Ui_MainWindow()
         self.qtMainWindow.setupUi(self)
-
+        
         self.frequency = 1000
         self.samplingRate = 44100
         self.volume = 50
         self.selectedWaveformString = "Sine Wave"
         self.samplingRateList = ["44100", "96000", "128000", "176400", "192000"]
+
+        self.signal_generator = SignalGenerator(frequency=self.frequency, 
+                                                sampling_rate=self.samplingRate, 
+                                                volume=self.volume, 
+                                                waveform=self.selectedWaveformString)
+
+        self.playback_thread = PlaybackThread(self.signal_generator)
+        self.playback_thread.finished.connect(self.handle_playback_finished)
 
         # SET DEFAULT VALUES
         self.qtMainWindow.frequencySlider.setValue(self.frequency)
@@ -72,13 +91,45 @@ class main(QMainWindow):
     def TriangularWaveClicked(self): self.UpdateSelectedWaveformText("Triangular Wave")
     def SawtoothWaveClicked(self): self.UpdateSelectedWaveformText("Sawtooth Wave")
 
+    def start_sound():
+        pass
+
+    def stop_sound():
+        pass
+
     def StartClicked(self):
+        try:
+            frequency = float(self.frequency)
+            volume = self.volume / 100  # Normalize volume to 0.0-1.0 range
+            sampling_rate = self.samplingRate
+
+            self.signal_generator.frequency = frequency
+            self.signal_generator.volume = volume
+            self.signal_generator.sampling_rate = sampling_rate
+
+            # Connect thread signals and start it
+            
+            self.playback_thread.start()  # Start playback in a separate thread
+
+        except ValueError as e:
+            print(f"Invalid input: {e}")
+
         self.qtMainWindow.signalStartLabel.setVisible(True)
         self.qtMainWindow.signalStopLabel.setVisible(False)
+        self.qtMainWindow.startPushButton.setEnabled(False)
+        self.qtMainWindow.stopPushButton.setEnabled(True)
+    
+    def handle_playback_finished(self):
+        self.qtMainWindow.startPushButton.setEnabled(True)
+        self.qtMainWindow.stopPushButton.setEnabled(False)
 
     def StopClicked(self):
+        self.signal_generator.stop_playback()
+
         self.qtMainWindow.signalStartLabel.setVisible(False)
         self.qtMainWindow.signalStopLabel.setVisible(True)
+        self.qtMainWindow.startPushButton.setEnabled(True)
+        self.qtMainWindow.stopPushButton.setEnabled(False)
 
 app = QApplication([])
 window = main()
