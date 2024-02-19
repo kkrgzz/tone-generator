@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="ButtonIcons">
+    <file>wave-sawtooth.png</file>
+    <file>wave-sine.png</file>
+    <file>wave-square.png</file>
+    <file>wave-triangular.png</file>
+  </qresource>
+</RCC>
