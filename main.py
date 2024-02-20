@@ -91,12 +91,6 @@ class main(QMainWindow):
     def TriangularWaveClicked(self): self.UpdateSelectedWaveformText("Triangular Wave")
     def SawtoothWaveClicked(self): self.UpdateSelectedWaveformText("Sawtooth Wave")
 
-    def start_sound():
-        pass
-
-    def stop_sound():
-        pass
-
     def StartClicked(self):
         try:
             frequency = float(self.frequency)
@@ -108,7 +102,6 @@ class main(QMainWindow):
             self.signal_generator.sampling_rate = sampling_rate
 
             # Connect thread signals and start it
-            
             self.playback_thread.start()  # Start playback in a separate thread
 
         except ValueError as e:
@@ -118,18 +111,19 @@ class main(QMainWindow):
         self.qtMainWindow.signalStopLabel.setVisible(False)
         self.qtMainWindow.startPushButton.setEnabled(False)
         self.qtMainWindow.stopPushButton.setEnabled(True)
+        print("start_clicked")
     
     def handle_playback_finished(self):
-        self.qtMainWindow.startPushButton.setEnabled(True)
-        self.qtMainWindow.stopPushButton.setEnabled(False)
-
-    def StopClicked(self):
-        self.signal_generator.stop_playback()
-
         self.qtMainWindow.signalStartLabel.setVisible(False)
         self.qtMainWindow.signalStopLabel.setVisible(True)
         self.qtMainWindow.startPushButton.setEnabled(True)
         self.qtMainWindow.stopPushButton.setEnabled(False)
+        self.signal_generator.reset_playback()
+        print("playback_finished")
+
+    def StopClicked(self):
+        self.signal_generator.stop_playback()
+        print("stop_clicked")
 
 app = QApplication([])
 window = main()
