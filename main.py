@@ -100,6 +100,7 @@ class main(QMainWindow):
             self.signal_generator.frequency = frequency
             self.signal_generator.volume = volume
             self.signal_generator.sampling_rate = sampling_rate
+            self.signal_generator.selected_waveform = self.selectedWaveformString
 
             # Connect thread signals and start it
             self.playback_thread.start()  # Start playback in a separate thread
