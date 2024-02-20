@@ -12,22 +12,23 @@ class SignalGenerator():
         self.selected_waveform = waveform
         self.stop_event = threading.Event()  # Event for stopping playback
     
-    def _generate_square_wave(self):
-        pass
-
-    def _generate_triangular_wave(self):
-        pass
-
-    def _generate_sawtooth_wave(self):
-        pass
-
-
     def _generate_sine_wave(self, duration):
         num_samples = int(self.sampling_rate * duration)
         t = np.linspace(0, duration, num_samples, endpoint=False)
         samples = (np.sin(2 * np.pi * t * self.frequency)).astype(np.float32)
         return samples
 
+    def _generate_square_wave(self, duration):
+        num_samples = int(self.sampling_rate * duration)
+        t = np.linspace(0, duration, num_samples, endpoint=False)
+        samples = (signal.square(2 * np.pi * t * self.frequency)).astype(np.float32)
+        return samples
+
+    def _generate_triangular_wave(self):
+        pass
+
+    def _generate_sawtooth_wave(self):
+        pass
 
     def play_sound_threaded(self):
         p = pyaudio.PyAudio()
