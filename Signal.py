@@ -10,8 +10,33 @@ class SignalGenerator():
         self.sampling_rate = sampling_rate
         self.volume = volume
         self.selected_waveform = waveform
+
+        # Define the duration of each chunk in seconds
+        self.chunk_duration = 0.5  # Adjust this value as I needed
+
         self.stop_event = threading.Event()  # Event for stopping playback
     
+    def _set_samples(self):
+            match self.selected_waveform:
+                case "Sine Wave":
+                    samples = self._generate_sine_wave(self.chunk_duration)
+
+                case "Square Wave":
+                    samples = self._generate_square_wave(self.chunk_duration)
+
+                case "Triangular Wave":
+                    pass
+
+                case "Sawtooth Wave":
+                    pass
+
+                case _:
+                    self.selected_waveform = "Sine Wave"
+                    samples = self._generate_sine_wave(self.chunk_duration)
+
+            return samples
+        
+
     def _generate_sine_wave(self, duration):
         num_samples = int(self.sampling_rate * duration)
         t = np.linspace(0, duration, num_samples, endpoint=False)
@@ -38,12 +63,8 @@ class SignalGenerator():
                         output=True)
         
         try:
-            # Define the duration of each chunk in seconds
-            chunk_duration = 0.5  # Adjust this value as I needed
-        
             while not self.stop_event.is_set():
-                output_bytes = (self.volume * self._generate_sine_wave(chunk_duration)).tobytes()
-
+                output_bytes = (self.volume * self._set_samples()).tobytes()
                 stream.write(output_bytes)
 
         except Exception as e:
