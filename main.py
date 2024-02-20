@@ -111,7 +111,6 @@ class main(QMainWindow):
         self.qtMainWindow.signalStopLabel.setVisible(False)
         self.qtMainWindow.startPushButton.setEnabled(False)
         self.qtMainWindow.stopPushButton.setEnabled(True)
-        print("start_clicked")
     
     def handle_playback_finished(self):
         self.qtMainWindow.signalStartLabel.setVisible(False)
@@ -119,11 +118,8 @@ class main(QMainWindow):
         self.qtMainWindow.startPushButton.setEnabled(True)
         self.qtMainWindow.stopPushButton.setEnabled(False)
         self.signal_generator.reset_playback()
-        print("playback_finished")
 
-    def StopClicked(self):
-        self.signal_generator.stop_playback()
-        print("stop_clicked")
+    def StopClicked(self): self.signal_generator.stop_playback()
 
 app = QApplication([])
 window = main()
